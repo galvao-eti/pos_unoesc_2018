@@ -18,23 +18,26 @@ return [
                     ],
                 ],
             ],
-            'usuario_perfil' => [
+            'usuario_cadastrar' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/usuario',
+                    'route'    => '/usuario/cadastrar',
                     'defaults' => [
                         'controller' => Controller\UsuarioController::class,
-                        'action'     => 'index',
+                        'action'     => 'cadastrar',
                     ],
                 ],
             ],
-            'perfil' => [
-                'type' => Literal::class,
+            'usuario_perfil' => [
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/perfil',
+                    'route'    => '/usuario[/[:id]]',
+                    'constraints' => [
+                        'id' => '[0-9]+',
+                    ],
                     'defaults' => [
                         'controller' => Controller\UsuarioController::class,
-                        'action'     => 'index',
+                        'action'     => 'visualizar',
                     ],
                 ],
             ],
@@ -43,7 +46,6 @@ return [
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\UsuarioController::class => InvokableFactory::class,
         ],
     ],
     'view_manager' => [
