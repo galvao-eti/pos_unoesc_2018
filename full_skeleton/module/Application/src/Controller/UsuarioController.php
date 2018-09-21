@@ -1,10 +1,8 @@
 <?php
 namespace Application\Controller;
 
-use Zend\ {
-    Mvc\Controller\AbstractActionController,
-    View\Model\ViewModel
-};
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
 
 class UsuarioController extends AbstractActionController
 {
@@ -24,9 +22,15 @@ class UsuarioController extends AbstractActionController
     {
         $id = $this->params()->fromRoute('id', 0);
 
-        return new ViewModel([
-            'id' => $id,
-        ]);
+        if ($id == 0) {
+            return new ViewModel([
+                'dados' => $this->table->listar()
+            ]);
+        } else {
+            return new ViewModel([
+                'dados' => $this->table->visualizar($id),
+            ]);
+        }
     }
 
     public function cadastrarAction()
@@ -45,6 +49,44 @@ class UsuarioController extends AbstractActionController
         return new ViewModel([
             'teste' =>  isset($dados['email']) ? $dados['email'] : '',
         ]);
+    }
+
+    public function excluirAction()
+    {
+        $id = $this->params()->fromRoute('id');
+        $this->table->excluir($id);
+
+        return $this->redirect()->toRoute('usuario_perfil');
+    }
+
+    public function atualizarAction()
+    {
+        $req = $this->getRequest();
+        $id = $this->params()->fromRoute('id');
+        $form = new \Application\Form\UsuarioForm();
+
+        if ($req->isPost()) {
+            $dados = $req->getPost();
+
+            $form->setData($dados);
+
+            if (!$form->isValid()) {
+            }
+
+            $model = new \Application\Model\Usuario();
+            $model->exchangeArray($form->getData());
+
+            $this->table->atualizar($model);
+        } else {
+            $dados = $this->table->visualizar($id);
+            $form->bind($dados);
+        }
+
+        return new ViewModel([
+            'form' => $form,
+        ]);
+
+
     }
 }
 
